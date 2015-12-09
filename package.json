@@ -1,0 +1,35 @@
+{
+  "name": "mygen",
+  "version": "0.0.1",
+  "description": "app generator",
+  "bin": {
+    "gen": "./bin/gen"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2046/mygen.git"
+  },
+  "author": "2046",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/2046/mygen/issues"
+  },
+  "homepage": "https://github.com/2046/mygen#readme",
+  "dependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.3.16",
+    "babel-plugin-transform-es2015-parameters": "^6.3.13",
+    "babel-register": "^6.3.13",
+    "commander": "^2.9.0",
+    "mv": "^2.1.1",
+    "ncp": "^2.0.0",
+    "progress": "^1.1.8",
+    "request": "^2.67.0",
+    "unzip": "^0.1.11"
+  },
+  "babel": {
+    "plugins": [
+      "transform-es2015-parameters",
+      "transform-es2015-modules-commonjs"
+    ]
+  }
+}
