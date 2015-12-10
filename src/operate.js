@@ -1,27 +1,21 @@
 import fs from 'fs'
 import mv from 'mv'
-import extract from 'unzip'
 import ncp from 'ncp'
+import extract from 'unzip'
 import request from 'request'
 import ProgressBar from 'progress'
 import {join, parse, isAbsolute} from 'path'
 
-let dirname = adjustDirname()
-
 export let file = {
   create(path = '', content, override) {
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(!fs.existsSync(path) || override){
       fs.writeFileSync(path, content, 'utf8');
     }
   },
   read(path = '') {
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(fs.existsSync(path)){
       return fs.readFileSync(path, 'utf8')
@@ -31,9 +25,7 @@ export let file = {
     this.create(path, content, true)
   },
   delete(path = '') {
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(fs.existsSync(path)){
       fs.unlinkSync(path)
@@ -43,9 +35,7 @@ export let file = {
 
 export let folders = {
   create(path = '') {
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(!fs.existsSync(path)){
       fs.mkdirSync(path)
@@ -54,9 +44,7 @@ export let folders = {
   read(path = '') {
     let set = new Set()
 
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(fs.existsSync(path)){
       fs.readdirSync(path).map(item => {
@@ -69,9 +57,7 @@ export let folders = {
     return set
   },
   delete(path = '') {
-    if(!isAbsolute(path)){
-      path = join(dirname, path)
-    }
+    path = toAbsolutePath(path)
 
     if(fs.existsSync(path)){
       deleteFolders(path)
@@ -90,7 +76,8 @@ export let download = function(url, callback){
       return
     }
 
-    path = join(dirname, parse(url).base)
+    path = toAbsolutePath(parse(url).base)
+
     progress = new ProgressBar('Downloading... [:bar] :percent :etas', {
       complete : '=',
       incomplete : ' ',
@@ -109,7 +96,8 @@ export let download = function(url, callback){
 }
 
 export let unzip = function(filePath, foldersPath, callback){
-  foldersPath = join(dirname, foldersPath)
+  filePath = toAbsolutePath(filePath)
+  foldersPath = toAbsolutePath(foldersPath)
 
   fs.createReadStream(filePath).on('end', function(){
     setTimeout(function(){
@@ -119,13 +107,8 @@ export let unzip = function(filePath, foldersPath, callback){
 }
 
 export let move = function(srcPath, distPath, callback){
-  if(!isAbsolute(srcPath)){
-    srcPath = join(dirname, srcPath)
-  }
-
-  if(!isAbsolute(distPath)){
-    distPath = join(dirname, distPath)
-  }
+  srcPath = toAbsolutePath(srcPath)
+  distPath = toAbsolutePath(distPath)
 
   if(!fs.existsSync(srcPath)){
     callback(new Error('Source directory does not exist'))
@@ -143,13 +126,8 @@ export let move = function(srcPath, distPath, callback){
 }
 
 export let copy = function(srcPath, distPath, callback){
-  if(!isAbsolute(srcPath)){
-    srcPath = join(dirname, srcPath)
-  }
-
-  if(!isAbsolute(distPath)){
-    distPath = join(dirname, distPath)
-  }
+  srcPath = toAbsolutePath(srcPath)
+  distPath = toAbsolutePath(distPath)
 
   if(!fs.existsSync(srcPath)){
     callback(new Error('Source directory does not exist'))
@@ -167,8 +145,8 @@ export let copy = function(srcPath, distPath, callback){
   })
 }
 
-function adjustDirname(){
-  return join(__dirname + '/../')
+function toAbsolutePath(path){
+  return isAbsolute(path) ? path : join(__dirname, '/../', path)
 }
 
 function deleteFolders(path) {
