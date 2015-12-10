@@ -1,2 +1,2 @@
 # mygen
-app generator
+webApp generator
