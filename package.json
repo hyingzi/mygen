@@ -1,7 +1,7 @@
 {
   "name": "mygen",
   "version": "0.0.1",
-  "description": "app generator",
+  "description": "webApp generator",
   "bin": {
     "gen": "./bin/gen"
   },
