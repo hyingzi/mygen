@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _path = require('path');
+
 var _helper = require('./helper');
 
 var _helper2 = _interopRequireDefault(_helper);
@@ -113,5 +115,5 @@ function unserialize(str) {
 }
 
 function toAbsolutePath(path) {
-  return join(__dirname, '/../', path);
+  return (0, _path.join)(__dirname, '/../', path);
 }

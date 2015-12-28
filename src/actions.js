@@ -1,3 +1,4 @@
+import {join} from 'path'
 import helper from './helper'
 
 let fileName, foldersName
