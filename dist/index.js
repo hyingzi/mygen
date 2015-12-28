@@ -53,5 +53,5 @@ for (let key in _actions2.default) {
 _commander2.default[!isHelp ? 'parse' : 'help'](!isHelp ? process.argv : '');
 
 function onerror(err) {
-  console.error(err.stack);
+  console.log(err);
 }

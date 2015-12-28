@@ -95,7 +95,7 @@ export default {
             total : total
           })
         }
-        
+
         res.on('data', function(chunk){
           showProgress && progress.tick(chunk.length)
         }).pipe(_fs.createWriteStream(path))
@@ -135,7 +135,7 @@ export default {
         if(err){
           reject(err)
         }
-
+        
         resolve(true)
       })
     })

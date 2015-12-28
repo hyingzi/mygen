@@ -35,5 +35,5 @@ for (let key in actions) {
 commander[!isHelp ? 'parse' : 'help'](!isHelp ? process.argv : '')
 
 function onerror(err){
-  console.error(err.stack)
+  console.log(err)
 }
