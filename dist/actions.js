@@ -12,8 +12,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 let fileName, foldersName;
 
-fileName = '.genrc';
-foldersName = 'generator';
+fileName = toAbsolutePath('.genrc');
+foldersName = toAbsolutePath('generator');
 
 exports.default = {
   *init() {
@@ -32,15 +32,16 @@ exports.default = {
   'install': {
     description: 'Install generator',
     *callback() {
-      let obj, url, zipName;
+      let obj, url, zipName, tempPath;
 
+      tempPath = toAbsolutePath('temp');
       obj = unserialize((yield _helper2.default.readFile(fileName)));
       url = `https://github.com/${ obj.github }/generator/archive/master.zip`;
 
-      yield _helper2.default.unzip(zipName = yield _helper2.default.download(url), 'temp');
-      yield _helper2.default.move('temp/generator-master', foldersName);
+      yield _helper2.default.unzip(zipName = yield _helper2.default.download(url), tempPath);
+      yield _helper2.default.move(toAbsolutePath('temp/generator-master'), foldersName);
       yield _helper2.default.unlink(zipName);
-      yield _helper2.default.rmdir('temp');
+      yield _helper2.default.rmdir(tempPath);
     }
   },
   'get': {
@@ -97,7 +98,7 @@ exports.default = {
     },
     description: 'Generator App',
     *callback(cmd) {
-      yield _helper2.default.copy(`${ foldersName }/${ cmd }`, process.cwd());
+      yield _helper2.default.copy(toAbsolutePath(`${ foldersName }/${ cmd }`), process.cwd());
       console.log('Bingo!\n');
     }
   }
@@ -109,4 +110,8 @@ function isString(obj) {
 
 function unserialize(str) {
   return JSON.parse(str);
+}
+
+function toAbsolutePath(path) {
+  return join(__dirname, '/../', path);
 }

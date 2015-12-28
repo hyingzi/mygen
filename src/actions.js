@@ -2,8 +2,8 @@ import helper from './helper'
 
 let fileName, foldersName
 
-fileName = '.genrc'
-foldersName = 'generator'
+fileName = toAbsolutePath('.genrc')
+foldersName = toAbsolutePath('generator')
 
 export default {
   *init() {
@@ -22,15 +22,16 @@ export default {
   'install' : {
     description : 'Install generator',
     *callback() {
-      let obj, url, zipName
+      let obj, url, zipName, tempPath
 
+      tempPath = toAbsolutePath('temp')
       obj = unserialize(yield helper.readFile(fileName))
       url = `https://github.com/${obj.github}/generator/archive/master.zip`
 
-      yield helper.unzip(zipName = yield helper.download(url), 'temp')
-      yield helper.move('temp/generator-master', foldersName)
+      yield helper.unzip(zipName = yield helper.download(url), tempPath)
+      yield helper.move(toAbsolutePath('temp/generator-master'), foldersName)
       yield helper.unlink(zipName)
-      yield helper.rmdir('temp')
+      yield helper.rmdir(tempPath)
     }
   },
   'get' : {
@@ -87,7 +88,7 @@ export default {
     },
     description : 'Generator App',
     *callback(cmd) {
-      yield helper.copy(`${foldersName}/${cmd}`, process.cwd())
+      yield helper.copy(toAbsolutePath(`${foldersName}/${cmd}`), process.cwd())
       console.log('Bingo!\n')
     }
   }
@@ -99,4 +100,8 @@ function isString(obj){
 
 function unserialize(str){
   return JSON.parse(str)
+}
+
+function toAbsolutePath(path){
+  return join(__dirname, '/../', path)
 }
