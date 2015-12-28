@@ -1,113 +1,102 @@
-import {file, folders, download, unzip, move, copy} from './operate'
+import helper from './helper'
 
-const genrcFileName = '.genrc'
-const generatorFoldersName = 'generator'
+let fileName, foldersName
 
-folders.create(generatorFoldersName)
-file.create(genrcFileName, JSON.stringify({
-  github : null,
-  staticFile : 'http://www.staticfile.org'
-}))
+fileName = '.genrc'
+foldersName = 'generator'
 
-export default new Set([
-  {
-    name : 'clear',
+export default {
+  *init() {
+    yield helper.mkdir(foldersName)
+    yield helper.writeFile(fileName, {
+      github : null,
+      staticFile : 'http://www.staticfile.org'
+    })
+  },
+  'clear' : {
     description : 'Clear generator',
-    callback : function (){
-      folders.delete(generatorFoldersName)
+    *callback() {
+      yield helper.rmdir(foldersName)
     }
   },
-  {
-    name : 'install',
+  'install' : {
     description : 'Install generator',
-    callback : function (){
-      let content, url
+    *callback() {
+      let obj, url, zipName
 
-      content = readGenrcFile()
-      url = `https://github.com/${content.github}/generator/archive/master.zip`
+      obj = unserialize(yield helper.readFile(fileName))
+      url = `https://github.com/${obj.github}/generator/archive/master.zip`
 
-      download(url, function(err, filePath){
-        if(err){
-          console.log(err.message)
-          return
-        }
-
-        unzip(filePath, 'temp', function(err, foldersPath){
-          move(`${foldersPath}/generator-master`, generatorFoldersName, function(err){
-            file.delete(filePath)
-            folders.delete(foldersPath)
-          })
-        })
-      })
+      yield helper.unzip(zipName = yield helper.download(url), 'temp')
+      yield helper.move('temp/generator-master', foldersName)
+      yield helper.unlink(zipName)
+      yield helper.rmdir('temp')
     }
   },
-  {
-    name : 'set',
-    description : 'Set the config value',
-    callback : function(key, value){
-      if(typeof key === 'string' && typeof value === 'string'){
-        let content = readGenrcFile()
-
-        if(content.hasOwnProperty(key)){
-          file.update(genrcFileName, JSON.stringify(Object.assign(content, {
-            [key] : value
-          })))
-        }
-      }
-    }
-  },
-  {
-    name : 'get',
+  'get' : {
     description : 'Get the config value',
-    callback : function(key){
-      if(typeof key === 'string'){
-        let content = readGenrcFile()
-
-        if(content.hasOwnProperty(key)){
-          console.log(`${content[key]} \n`)
-        }
+    *callback(key) {
+      if(isString(key)){
+        let obj = unserialize(yield helper.readFile(fileName))
+        console.log(`${obj[key]}\n`)
       }
     }
   },
-  {
-    name : 'config',
+  'set' : {
+    description : 'Set the config value',
+    *callback(key, value) {
+      if(isString(key) && isString(value)){
+        let obj = unserialize(yield helper.readFile(fileName))
+
+        yield helper.writeFile(fileName, Object.assign(obj, {
+          [key] : value
+        }), true)
+      }
+    }
+  },
+  'config' : {
     description : 'Output the config value',
-    callback : function(){
-      let content = readGenrcFile()
+    *callback() {
+      let obj, result
 
-      for(let key in content){
-        console.log(`${key} = ${content[key]}`)
+      result = []
+      obj = unserialize(yield helper.readFile(fileName))
+
+      for(let key in obj){
+        result.push(`${key} = ${obj[key]}\n`)
       }
+
+      console.log(result.join(''))
     }
   },
-  {
-    name : 'list',
+  'list' : {
     description : 'Output the generator available',
-    callback : function(){
-      for(let foldersName of folders.read(generatorFoldersName)){
-        console.log(foldersName)
+    *callback() {
+      let result = []
+
+      for(let item of yield helper.readdir(foldersName)){
+        result.push(`${item}\n`)
       }
+
+      console.log(result.join(''))
     }
   },
-  {
-    name : '*',
+  '*' : {
     options : {
       noHelp : true
     },
     description : 'Generator App',
-    callback : function(cmd){
-      copy(`${generatorFoldersName}/${cmd}`, process.cwd(), function(err){
-        if(err){
-          console.log(err.message)
-          return
-        }
-
-        console.log('done!')
-      })
+    *callback(cmd) {
+      yield helper.copy(`${foldersName}/${cmd}`, process.cwd())
+      console.log('Bingo!\n')
     }
   }
-])
+}
 
-function readGenrcFile(){
-  return JSON.parse(file.read(genrcFileName))
+function isString(obj){
+  return typeof obj === 'string'
+}
+
+function unserialize(str){
+  return JSON.parse(str)
 }

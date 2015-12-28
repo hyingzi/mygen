@@ -18,7 +18,8 @@
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.3.16",
     "babel-plugin-transform-es2015-parameters": "^6.3.13",
-    "babel-register": "^6.3.13",
+    "co": "^4.6.0",
+    "co-fs": "^1.2.0",
     "commander": "^2.9.0",
     "mv": "^2.1.1",
     "ncp": "^2.0.0",
@@ -31,5 +32,12 @@
       "transform-es2015-parameters",
       "transform-es2015-modules-commonjs"
     ]
+  },
+  "scripts": {
+    "compile" : "babel src -d dist",
+    "test": "npm run compile && mocha --compilers js:babel-core/register"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4"
   }
 }
