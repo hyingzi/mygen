@@ -100,11 +100,12 @@ exports.default = {
     },
     description: 'Generator App',
     *callback(cmd) {
-      yield _helper2.default.copy(toAbsolutePath(`${ foldersName }/${ cmd }`), process.cwd());
+      yield _helper2.default.copy(`${ foldersName }`, process.cwd());
       console.log('Bingo!\n');
     }
   }
 };
+
 
 function isString(obj) {
   return typeof obj === 'string';

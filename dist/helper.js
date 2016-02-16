@@ -42,6 +42,7 @@ exports.default = {
     let content = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
     let override = arguments[2];
 
+
     if (!(yield _coFs2.default.exists(path)) || override) {
       if (typeof content === 'object') {
         content = JSON.stringify(content);
