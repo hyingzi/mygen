@@ -89,7 +89,7 @@ export default {
     },
     description : 'Generator App',
     *callback(cmd) {
-      yield helper.copy(`${foldersName}`, process.cwd())
+      yield helper.copy(`${foldersName}/${cmd}`, process.cwd())
       console.log('Bingo!\n')
     }
   }

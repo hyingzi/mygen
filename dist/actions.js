@@ -100,7 +100,7 @@ exports.default = {
     },
     description: 'Generator App',
     *callback(cmd) {
-      yield _helper2.default.copy(`${ foldersName }`, process.cwd());
+      yield _helper2.default.copy(`${ foldersName }/${ cmd }`, process.cwd());
       console.log('Bingo!\n');
     }
   }
