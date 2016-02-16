@@ -89,7 +89,7 @@ export default {
     },
     description : 'Generator App',
     *callback(cmd) {
-      yield helper.copy(toAbsolutePath(`${foldersName}/${cmd}`), process.cwd())
+      yield helper.copy(`${foldersName}`, process.cwd())
       console.log('Bingo!\n')
     }
   }
